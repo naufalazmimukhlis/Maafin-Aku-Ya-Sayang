@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maafin Aku Ya Sayang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap');
+        
+        :root { --soft-red: #e63946; }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: #050505;
+            color: #f1faee;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(230, 57, 70, 0.05) 0%, rgba(0,0,0,1) 70%);
+            z-index: -1;
+        }
+
+        .video-container {
+            width: 90%;
+            max-width: 500px;
+            aspect-ratio: 16 / 9;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #000;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .retro-title { font-family: 'VT323', monospace; }
+
+        .btn-retro {
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            transition: all 0.5s ease;
+        }
+
+        .btn-retro:hover {
+            border-color: var(--soft-red);
+            box-shadow: 0 0 20px rgba(230, 57, 70, 0.2);
+            color: white;
+        }
+
+        .cursor-custom {
+            width: 6px; height: 12px;
+            background: var(--soft-red);
+            display: inline-block;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body onclick="spawnHeart(event)" class="h-screen flex items-center justify-center">
+
+    <div class="bg-glow"></div>
+    <div class="crt-overlay"></div>
+
+    <div id="overlay" class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#050505]">
+        <div class="text-center px-6">
+            <p class="text-[9px] tracking-[0.6em] mb-12 opacity-30 italic uppercase">Ada sesuatu untuk kamu nih....</p>
+            <button onclick="startExperience()" class="btn-retro px-12 py-4 text-xs tracking-[0.4em] uppercase text-white">
+                buka
+            </button>
+        </div>
+    </div>
+
+    <main id="main-content" class="relative z-10 flex flex-col items-center text-center px-6 opacity-0">
+        <div class="video-container">
+            <video id="myVideo" muted loop playsinline>
+                <source src="video/video.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="max-w-xl w-full">
+            <h1 class="retro-title text-2xl md:text-4xl text-white mb-6 tracking-tighter opacity-80 uppercase">
+                Maafin Aku Yaaa Sayang
+            </h1>
+            
+            <div class="min-h-[140px] mb-6">
+                <span id="typewriter" class="text-[11px] md:text-sm leading-relaxed italic font-light opacity-90"></span>
+                <span id="main-cursor" class="cursor-custom ml-1"></span>
+            </div>
+
+            <div id="action-area" class="opacity-0 translate-y-8">
+                <div class="flex flex-col md:flex-row gap-8 justify-center items-center">
+                    <button onclick="forgive()" class="text-white text-[10px] tracking-[0.4em] hover:text-red-400 transition-all duration-700 uppercase">
+                        [ iyaa aku maafin ]
+                    </button>
+                    <button id="noBtn" onmouseover="moveButton()" class="text-gray-600 text-[10px] italic tracking-widest cursor-default">
+                        [ GAK MAU !!!! ]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <audio id="bgMusic" loop>
+        <source src="music/Loose.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        gsap.registerPlugin(TextPlugin);
+
+        const messages = [
+            "akuu benar benar minta maaf yaa. belakangan ini aku sadar kalau sikapku sudah keterlaluan dan pasti bikin hati kamu sakit banget...",
+            "apalagi sama kesalahan yang baru aku buat pasti ngebuat kamu jadi sedih dan kecewaa.",
+            "melihat kamu sedih karena aku adalah hal yang paling bikin akuu menyesal saat ini.",
+            "akuu sayangg banget sama kamu, tapi aku justru gagal menjaga perasaanmu.",
+            "aku nggak mau kehilangan kamu hanya karena egoku yang nggak terkontrol.",
+            "tolong kasih aku kesempatan buat memperbaiki semuanya, karena sejujurnya duniaku terasa hampa kalau kita sedang jauh seperti ini.",
+            "maafinn akuu yang masih banyak kurangnya ini ya. aku janji bakal berusaha lebih baik lagi demi kita."
+        ];
+        
+        let msgIndex = 0;
+
+        function startExperience() {
+            const music = document.getElementById('bgMusic');
+            const video = document.getElementById('myVideo');
+            music.volume = 0.5;
+            music.play();
+            video.play();
+
+            gsap.to("#overlay", { opacity: 0, duration: 2, onComplete: () => {
+                document.getElementById('overlay').style.display = 'none';
+                gsap.to("#main-content", { opacity: 1, duration: 2 });
+                runTypewriter();
+                // Tombol muncul setelah pesan panjang dibaca (sekitar 25-30 detik)
+                gsap.to("#action-area", { opacity: 1, y: 0, delay: 25, duration: 2 });
+            }});
+        }
+
+        function runTypewriter() {
+            gsap.to("#typewriter", {
+                duration: 6, // Diperlambat agar lebih puitis
+                text: messages[msgIndex],
+                ease: "none",
+                onComplete: () => {
+                    setTimeout(() => {
+                        if(msgIndex < messages.length - 1) {
+                            gsap.to("#typewriter", { opacity: 0, duration: 1, onComplete: () => {
+                                msgIndex++;
+                                gsap.to("#typewriter", { opacity: 1 });
+                                runTypewriter();
+                            }});
+                        }
+                    }, 3000);
+                }
+            });
+        }
+
+        function spawnHeart(e) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤';
+            heart.className = 'fixed pointer-events-none z-[110] text-red-500 opacity-60 text-xs';
+            heart.style.left = e.clientX + 'px'; heart.style.top = e.clientY + 'px';
+            document.body.appendChild(heart);
+            gsap.to(heart, { y: -80, opacity: 0, duration: 2, onComplete: () => heart.remove() });
+        }
+
+        function moveButton() {
+            const btn = document.getElementById('noBtn');
+            gsap.to(btn, { x: (Math.random() - 0.5) * 300, y: (Math.random() - 0.5) * 300, duration: 0.6 });
+        }
+
+        function sendWA() {
+            // GANTI NOMOR DI BAWAH INI (Awali dengan 62)
+            const nomorWA = "6285185224133"; 
+            const pesan = "iyaa aku maafin tapi janji kalo ada apa apa kedepannya mau apapun itu kamu harus kasih tau aku dari awal dan minta saran aku yaa";
+            const url = `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`;
+            window.open(url, '_blank');
+        }
+
+        function forgive() {
+            gsap.to("main", { opacity: 0, duration: 2, onComplete: () => {
+                document.body.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-screen px-6 text-center">
+                        <div class="video-container" style="max-width: 300px; border-color: #e63946;">
+                            <video autoplay muted loop playsinline>
+                                <source src="video/video.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="z-10">
+                            <div class="mb-6 text-red-500 text-4xl animate-pulse">❤</div>
+                            <p class="text-white text-[10px] tracking-[0.5em] uppercase mb-4">Connection Re-established</p>
+                            <p class="text-[11px] italic opacity-70 mb-10 leading-relaxed px-4">
+                                "Terima kasih sudah memaafkan egoku dan memberiku ruang untuk kembali."
+                            </p>
+                            
+                            <div class="flex flex-col gap-4">
+                                <button onclick="sendWA()" class="btn-retro px-10 py-4 text-[11px] tracking-[0.4em] uppercase text-white border-red-500 bg-red-900/20">
+                                    OKEEEE
+                                </button>
+                                <button onclick="location.reload()" class="text-[9px] tracking-[0.2em] uppercase text-gray-500 hover:text-white transition-all">
+                                    [ Lihat Lagi ]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }});
+        }
+    </script>
+</body>
+</html>
